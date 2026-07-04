@@ -1,0 +1,1135 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>形容詞子句 教學筆記本</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Caveat:wght@500;600;700&family=Kalam:wght@400;700&family=Noto+Sans+TC:wght@500;700;900&display=swap" rel="stylesheet">
+<style>
+/* ======================================================
+   THEME VARIABLES — 筆記本手寫風格
+   ====================================================== */
+:root{
+    --paper:#fffdf7;
+    --line:#c9dcef;
+    --margin:#e8888a;
+    --ink:#25324a;
+    --ink-soft:#4a5570;
+    --marker:#ffe066;
+    --marker-2:#a6e3a1;
+    --blue-ink:#2255a4;
+    --pink:#ffc9c9;
+    --pink-deep:#ff9f9f;
+    --green:#b2f2bb;
+    --green-deep:#1e5c2e;
+    --font-cjk:'Noto Sans TC', sans-serif;
+    --font-hand:'Caveat', cursive;
+    --font-mono-hand:'Kalam', cursive;
+    --ease: cubic-bezier(0.16,1,0.3,1);
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+
+/* ======================================================
+   FIXED 16:9 STAGE — MANDATORY BASE (viewport-base.css)
+   ====================================================== */
+html,body{width:100%;height:100%;margin:0;overflow:hidden;background:var(--stage-bg,#1c1c1c);}
+.deck-viewport{position:fixed;inset:0;overflow:hidden;background:var(--stage-bg,#1c1c1c);}
+.deck-stage{position:absolute;left:0;top:0;width:1920px;height:1080px;overflow:hidden;transform-origin:0 0;background:var(--slide-bg,#fff);}
+.slide{position:absolute;inset:0;width:1920px;height:1080px;overflow:hidden;display:block;visibility:hidden;opacity:0;pointer-events:none;background:var(--slide-bg,#fff);transition:opacity .35s var(--ease);}
+.slide.active,.slide.visible{visibility:visible;opacity:1;pointer-events:auto;z-index:1;}
+img,video,canvas,svg{max-width:100%;max-height:100%;}
+.deck-controls{position:fixed;left:50%;bottom:22px;transform:translateX(-50%);z-index:1000;}
+@media print{
+    html,body{width:1920px;height:auto;overflow:visible;background:#fff;}
+    .deck-viewport{position:static;overflow:visible;background:#fff;}
+    .deck-stage{position:static;width:auto;height:auto;transform:none!important;background:none;}
+    .slide{position:relative;display:block!important;visibility:visible!important;opacity:1!important;pointer-events:auto!important;width:1920px;height:1080px;break-after:page;page-break-after:always;}
+    .slide:last-child{break-after:auto;page-break-after:auto;}
+    .deck-controls{display:none!important;}
+}
+@media (prefers-reduced-motion: reduce){
+    *,*::before,*::after{animation-duration:.01ms!important;transition-duration:.2s!important;}
+}
+
+/* ======================================================
+   NOTEBOOK PAGE COMPONENTS
+   ====================================================== */
+.notebook{position:absolute;inset:0;background:var(--paper);}
+.rule-lines{position:absolute;inset:0;left:220px;background-image:repeating-linear-gradient(to bottom, transparent 0, transparent 63px, var(--line) 64px);}
+.margin-line{position:absolute;left:220px;top:0;bottom:0;width:3px;background:var(--margin);opacity:.7;}
+.spiral{position:absolute;left:0;top:0;bottom:0;width:120px;background:linear-gradient(90deg,#ded6c2,#eee6d2);}
+.hole{position:absolute;left:52px;width:34px;height:34px;border-radius:50%;background:#000;box-shadow:inset 0 3px 6px rgba(0,0,0,.6);}
+.ring{position:absolute;left:36px;width:66px;height:24px;border:6px solid #b9b2a0;border-radius:50%;background:transparent;}
+.grain{position:absolute;inset:0;opacity:.045;mix-blend-mode:multiply;pointer-events:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3'/%3E%3C/filter%3E%3Crect width='120' height='120' filter='url(%23n)'/%3E%3C/svg%3E");}
+
+.page-holes{position:absolute;inset:0;}
+.page-holes .hole{}
+.page-holes .ring{}
+
+.content{position:absolute;left:290px;top:80px;right:100px;bottom:70px;}
+.eyebrow{display:inline-block;font-family:var(--font-mono-hand);font-weight:700;font-size:30px;color:#fff;background:var(--blue-ink);padding:8px 26px;border-radius:26px;transform:rotate(-1.5deg);box-shadow:0 6px 14px rgba(34,85,164,.25);}
+.marker-hl{background:linear-gradient(180deg, transparent 55%, var(--marker) 55%, var(--marker) 88%, transparent 88%);padding:0 8px;}
+.slide-title{font-family:var(--font-cjk);font-weight:900;font-size:76px;color:var(--ink);line-height:1.3;margin-top:22px;}
+.slide-sub{font-family:var(--font-hand);font-weight:700;font-size:38px;color:var(--ink-soft);margin-top:12px;}
+
+.doodle-star{stroke:var(--margin);stroke-width:5;fill:none;}
+.footer-tag{position:absolute;left:290px;bottom:26px;font-family:var(--font-mono-hand);font-size:24px;color:#96a1b5;}
+.page-num{position:absolute;right:60px;bottom:26px;font-family:var(--font-mono-hand);font-size:24px;color:#96a1b5;}
+
+/* postit / index card */
+.postit{position:absolute;background:#fff3b0;box-shadow:0 12px 22px rgba(0,0,0,.18);padding:22px 26px;font-family:var(--font-hand);font-weight:700;color:#5a4a00;}
+.postit.pink{background:var(--pink);color:#7a1f2b;}
+.postit.green{background:var(--green);color:var(--green-deep);}
+.postit.blue{background:#a5d8ff;color:#0b3d66;}
+
+/* pill tags for difficulty */
+.tag{display:inline-block;font-family:var(--font-mono-hand);font-weight:700;font-size:24px;padding:3px 18px;border-radius:20px;margin-right:14px;}
+.tag-easy{background:var(--green);color:var(--green-deep);}
+.tag-hard{background:var(--pink);color:#7a1f2b;}
+
+/* example / practice list items */
+.list-block{margin-top:26px;}
+.list-block + .list-block{margin-top:34px;}
+.item{font-family:var(--font-cjk);font-size:30px;color:var(--ink);line-height:1.65;margin-top:16px;padding-left:14px;border-left:5px solid transparent;}
+.item b{color:var(--blue-ink);}
+.item.easy{border-left-color:var(--green-deep);}
+.item.hard{border-left-color:var(--margin);}
+.item .cn-note{color:var(--ink-soft);font-size:26px;}
+
+/* practice items with reveal */
+.qa{font-family:var(--font-cjk);font-size:30px;color:var(--ink);line-height:1.7;margin-top:18px;display:flex;flex-wrap:wrap;align-items:center;gap:14px;}
+.qa .qtext{flex:1;min-width:600px;}
+.ans-toggle{cursor:pointer;background:var(--marker);border:2px dashed #c9a400;border-radius:22px;padding:4px 22px;font-family:var(--font-mono-hand);font-weight:700;font-size:24px;color:#5a4a00;user-select:none;white-space:nowrap;}
+.ans-toggle:hover{background:#ffd43b;}
+.ans-text{display:none;font-family:var(--font-mono-hand);font-weight:700;font-size:26px;color:var(--blue-ink);background:rgba(165,216,255,.35);padding:4px 16px;border-radius:14px;}
+.ans-text.show{display:inline-block;}
+
+/* table */
+.rule-table{width:100%;border-collapse:collapse;font-family:var(--font-cjk);font-size:30px;margin-top:24px;background:rgba(255,255,255,.6);}
+.rule-table th,.rule-table td{border:2px dashed var(--margin);padding:16px 22px;text-align:center;color:var(--ink);}
+.rule-table thead th{background:rgba(255,224,102,.55);font-weight:900;}
+.rule-table tbody tr:nth-child(even){background:rgba(165,216,255,.12);}
+
+/* step badge for section flow */
+.step-badge{position:absolute;right:110px;top:90px;width:210px;height:210px;border-radius:50%;background:radial-gradient(circle at 35% 30%, #fff, var(--pink-deep));display:flex;flex-direction:column;align-items:center;justify-content:center;transform:rotate(6deg);box-shadow:0 14px 26px rgba(0,0,0,.18);}
+.step-badge .num{font-family:var(--font-hand);font-weight:700;font-size:70px;color:#7a1f2b;line-height:1;}
+.step-badge .lbl{font-family:var(--font-mono-hand);font-size:22px;color:#7a1f2b;}
+
+.two-col{display:flex;gap:60px;margin-top:26px;}
+.col{flex:1;}
+
+.kbd-hint{font-family:var(--font-mono-hand);}
+
+/* nav buttons outside stage */
+.nav-btn{font-family:var(--font-mono-hand);font-size:24px;background:#fff3b0;border:2px solid #c9a400;color:#5a4a00;border-radius:22px;padding:8px 24px;cursor:pointer;margin:0 10px;}
+.nav-btn:hover{background:#ffd43b;}
+.nav-counter{font-family:var(--font-mono-hand);font-size:22px;color:#fff;background:rgba(0,0,0,.4);padding:8px 18px;border-radius:20px;margin:0 6px;}
+.toast{position:fixed;left:50%;top:40px;transform:translateX(-50%);background:rgba(0,0,0,.75);color:#fff;font-family:var(--font-mono-hand);font-size:22px;padding:10px 26px;border-radius:20px;z-index:2000;opacity:0;transition:opacity .3s;pointer-events:none;}
+.toast.show{opacity:1;}
+</style>
+</head>
+<body>
+<div class="deck-viewport">
+<main class="deck-stage" id="deckStage">
+
+<!-- ============================================================ -->
+<!-- SLIDE 0 — TITLE -->
+<!-- ============================================================ -->
+<section class="slide active">
+    <div class="notebook"></div>
+    <div class="rule-lines"></div>
+    <div class="margin-line"></div>
+    <div class="spiral"></div>
+    <div class="hole" style="top:80px;"></div><div class="ring" style="top:68px;"></div>
+    <div class="hole" style="top:320px;"></div><div class="ring" style="top:308px;"></div>
+    <div class="hole" style="top:560px;"></div><div class="ring" style="top:548px;"></div>
+    <div class="hole" style="top:800px;"></div><div class="ring" style="top:788px;"></div>
+    <div class="grain"></div>
+
+    <div style="position:absolute;left:290px;top:170px;width:1500px;">
+        <div class="editable" style="font-family:var(--font-cjk);font-weight:900;font-size:132px;color:var(--ink);line-height:1.3;"><span class="marker-hl">形容詞子句</span></div>
+        <div class="editable" style="font-family:var(--font-hand);font-weight:700;font-size:64px;color:var(--blue-ink);margin-top:10px;transform:rotate(-1deg);display:inline-block;">who / whom / whose / which / that</div>
+
+        <svg class="doodle-star" style="position:absolute;left:1270px;top:200px;width:90px;height:90px;" viewBox="0 0 60 60">
+            <path d="M30 5 L35 25 L55 25 L38 37 L44 57 L30 45 L16 57 L22 37 L5 25 L25 25 Z"/>
+        </svg>
+
+        <div class="editable" style="font-family:var(--font-mono-hand);font-size:38px;color:var(--ink);margin-top:56px;line-height:2;">先行詞是<span style="color:var(--blue-ink);font-weight:700;">人</span>還是<span style="color:var(--blue-ink);font-weight:700;">物</span>？子句裡缺的是<span style="color:var(--blue-ink);font-weight:700;">主詞</span>還是<span style="color:var(--blue-ink);font-weight:700;">受詞</span>？</div>
+        <div class="editable" style="font-family:var(--font-mono-hand);font-size:38px;color:var(--ink);line-height:2;">今天，我們把這套判斷邏輯一次筆記起來。</div>
+    </div>
+
+    <div class="postit" style="right:170px;top:210px;width:300px;height:220px;transform:rotate(4deg);">省略？<br>Ving?<br>Vpp?</div>
+    <div class="footer-tag">高中英文文法筆記 · Lesson 1</div>
+    <div class="page-num">1</div>
+</section>
+
+<!-- ============================================================ -->
+<!-- SLIDE 1 — AGENDA -->
+<!-- ============================================================ -->
+<section class="slide">
+    <div class="notebook"></div><div class="rule-lines"></div><div class="margin-line"></div><div class="spiral"></div>
+    <div class="hole" style="top:80px;"></div><div class="ring" style="top:68px;"></div>
+    <div class="hole" style="top:320px;"></div><div class="ring" style="top:308px;"></div>
+    <div class="hole" style="top:560px;"></div><div class="ring" style="top:548px;"></div>
+    <div class="hole" style="top:800px;"></div><div class="ring" style="top:788px;"></div>
+    <div class="grain"></div>
+    <div class="content">
+        <div class="eyebrow">今日路線圖</div>
+        <div class="slide-title">這堂課我們要走過的<span class="marker-hl">9 個路標</span></div>
+        <div class="two-col" style="margin-top:40px;">
+            <div class="col">
+                <div class="item easy editable">① 句子一定要有主詞＋動詞（命令句例外）</div>
+                <div class="item easy editable">② 主格／受格／所有格複習</div>
+                <div class="item easy editable">③ 三大子句功能總覽</div>
+                <div class="item easy editable">④ 形容詞子句為什麼要放在名詞後面</div>
+                <div class="item easy editable">⑤ 代名詞 → 關係代名詞（拆句合句）</div>
+            </div>
+            <div class="col">
+                <div class="item hard editable">⑥ 主詞／受詞判斷 ＋ 關係代名詞表格</div>
+                <div class="item hard editable">⑦ 省略 ＋ 化簡為分詞片語（Ving / Vpp）</div>
+                <div class="item hard editable">⑧ 一定要用／不能用 that</div>
+                <div class="item hard editable">⑨ 限定用法 vs 非限定用法</div>
+                <div class="item hard editable" style="border-left-color:var(--blue-ink);">⑩ 總結：易混淆總表 + 綜合練習</div>
+            </div>
+        </div>
+    </div>
+    <div class="footer-tag">形容詞子句教學 · 60分鐘</div><div class="page-num">2</div>
+</section>
+
+<!-- ============================================================ -->
+<!-- SLIDE 2 — STEP1 主詞動詞 + 命令句 -->
+<!-- ============================================================ -->
+<section class="slide">
+    <div class="notebook"></div><div class="rule-lines"></div><div class="margin-line"></div><div class="spiral"></div>
+    <div class="hole" style="top:80px;"></div><div class="ring" style="top:68px;"></div>
+    <div class="hole" style="top:320px;"></div><div class="ring" style="top:308px;"></div>
+    <div class="hole" style="top:560px;"></div><div class="ring" style="top:548px;"></div>
+    <div class="hole" style="top:800px;"></div><div class="ring" style="top:788px;"></div>
+    <div class="grain"></div>
+    <div class="step-badge"><div class="num">1</div><div class="lbl">STEP</div></div>
+    <div class="content" style="right:340px;">
+        <div class="eyebrow">觀念鋪墊</div>
+        <div class="slide-title">一個句子<span class="marker-hl">一定要有主詞＋動詞</span></div>
+        <div class="list-block">
+            <div class="item easy editable">這是英文句子最基本的骨架，今天後面判斷「能不能省略」都靠這個觀念。</div>
+            <div class="item easy editable">唯一的例外：<b>祈使句（命令句）</b>，主詞 You 會暫時消失。</div>
+            <div class="item easy editable">(You) <b>Close</b> the door. ／ (You) <b>Be</b> quiet.</div>
+        </div>
+        <div class="postit blue" style="left:0;bottom:0;position:relative;margin-top:40px;width:900px;">
+            伏筆：等一下形容詞子句裡「缺主詞」還是「缺受詞」，會決定能不能把關係詞拿掉！
+        </div>
+    </div>
+    <div class="footer-tag">STEP 1 · 句子骨架</div><div class="page-num">3</div>
+</section>
+
+<!-- ============================================================ -->
+<!-- SLIDE 3 — STEP2 格位複習表 -->
+<!-- ============================================================ -->
+<section class="slide">
+    <div class="notebook"></div><div class="rule-lines"></div><div class="margin-line"></div><div class="spiral"></div>
+    <div class="hole" style="top:80px;"></div><div class="ring" style="top:68px;"></div>
+    <div class="hole" style="top:320px;"></div><div class="ring" style="top:308px;"></div>
+    <div class="hole" style="top:560px;"></div><div class="ring" style="top:548px;"></div>
+    <div class="hole" style="top:800px;"></div><div class="ring" style="top:788px;"></div>
+    <div class="grain"></div>
+    <div class="step-badge"><div class="num">2</div><div class="lbl">STEP</div></div>
+    <div class="content" style="right:340px;">
+        <div class="eyebrow">複習：代名詞格位</div>
+        <div class="slide-title">主格・受格・所有格<span class="marker-hl">複習表</span></div>
+        <table class="rule-table">
+            <thead><tr><th>主格</th><th>受格</th><th>所有格形容詞</th><th>所有格代名詞</th></tr></thead>
+            <tbody>
+                <tr><td>I</td><td>me</td><td>my</td><td>mine</td></tr>
+                <tr><td>he</td><td>him</td><td>his</td><td>his</td></tr>
+                <tr><td>she</td><td>her</td><td>her</td><td>hers</td></tr>
+                <tr><td>they</td><td>them</td><td>their</td><td>theirs</td></tr>
+            </tbody>
+        </table>
+        <div class="postit green" style="margin-top:30px;width:1000px;">
+            這張表是等一下 who／whom／whose 邏輯的地基：who＝主格邏輯，whom＝受格邏輯，whose＝所有格邏輯。
+        </div>
+    </div>
+    <div class="footer-tag">STEP 2 · 格位複習</div><div class="page-num">4</div>
+</section>
+
+<!-- ============================================================ -->
+<!-- SLIDE 4 — 1-2 教學示範例句 -->
+<!-- ============================================================ -->
+<section class="slide">
+    <div class="notebook"></div><div class="rule-lines"></div><div class="margin-line"></div><div class="spiral"></div>
+    <div class="hole" style="top:80px;"></div><div class="ring" style="top:68px;"></div>
+    <div class="hole" style="top:320px;"></div><div class="ring" style="top:308px;"></div>
+    <div class="hole" style="top:560px;"></div><div class="ring" style="top:548px;"></div>
+    <div class="hole" style="top:800px;"></div><div class="ring" style="top:788px;"></div>
+    <div class="grain"></div>
+    <div class="content">
+        <div class="eyebrow">1-2 教學示範例句</div>
+        <div class="slide-title">主格／受格／所有格 <span class="marker-hl">例句</span></div>
+        <div class="list-block">
+            <span class="tag tag-easy">簡單</span>
+            <div class="item easy editable">① <b>She</b> is my English teacher.（主格）</div>
+            <div class="item easy editable">② My mother gave <b>him</b> a present.（受格）</div>
+            <div class="item easy editable">③ This is <b>their</b> classroom.（所有格）</div>
+        </div>
+        <div class="list-block">
+            <span class="tag tag-hard">學測頂標</span>
+            <div class="item hard editable">① <b>Neither</b> the coach <b>nor I</b> was informed about the sudden schedule change.</div>
+            <div class="item hard editable">② The prize was awarded to <b>whoever</b> answered the fastest, not to <b>him</b>, even though he had tried the hardest.</div>
+        </div>
+    </div>
+    <div class="footer-tag">STEP 2 · 格位複習</div><div class="page-num">5</div>
+</section>
+
+<!-- ============================================================ -->
+<!-- SLIDE 5 — 1-2 學生練習 -->
+<!-- ============================================================ -->
+<section class="slide">
+    <div class="notebook"></div><div class="rule-lines"></div><div class="margin-line"></div><div class="spiral"></div>
+    <div class="hole" style="top:80px;"></div><div class="ring" style="top:68px;"></div>
+    <div class="hole" style="top:320px;"></div><div class="ring" style="top:308px;"></div>
+    <div class="hole" style="top:560px;"></div><div class="ring" style="top:548px;"></div>
+    <div class="hole" style="top:800px;"></div><div class="ring" style="top:788px;"></div>
+    <div class="grain"></div>
+    <div class="content">
+        <div class="eyebrow">1-2 學生練習</div>
+        <div class="slide-title">選出正確的格位</div>
+        <div class="list-block">
+            <span class="tag tag-easy">簡單</span>
+            <div class="qa"><span class="qtext editable">1. ___ is my best friend. (A) She (B) Her</span><span class="ans-toggle">看答案</span><span class="ans-text">A</span></div>
+            <div class="qa"><span class="qtext editable">2. I borrowed a pen from ___. (A) he (B) him</span><span class="ans-toggle">看答案</span><span class="ans-text">B</span></div>
+            <div class="qa"><span class="qtext editable">3. This is ___ dog, not ___. (A)his/his (B)him/mine</span><span class="ans-toggle">看答案</span><span class="ans-text">his ／ mine</span></div>
+        </div>
+        <div class="list-block">
+            <span class="tag tag-hard">學測頂標</span>
+            <div class="qa"><span class="qtext editable">1. Neither the manager nor ___ was aware of the policy change. (A) I (B) me</span><span class="ans-toggle">看答案</span><span class="ans-text">A</span></div>
+            <div class="qa"><span class="qtext editable">2. The teacher gave both ___ and me extra homework. (A) he (B) him</span><span class="ans-toggle">看答案</span><span class="ans-text">B</span></div>
+        </div>
+    </div>
+    <div class="footer-tag">STEP 2 · 格位複習</div><div class="page-num">6</div>
+</section>
+
+<!-- ============================================================ -->
+<!-- SLIDE 6 — STEP3 三大子句總覽 -->
+<!-- ============================================================ -->
+<section class="slide">
+    <div class="notebook"></div><div class="rule-lines"></div><div class="margin-line"></div><div class="spiral"></div>
+    <div class="hole" style="top:80px;"></div><div class="ring" style="top:68px;"></div>
+    <div class="hole" style="top:320px;"></div><div class="ring" style="top:308px;"></div>
+    <div class="hole" style="top:560px;"></div><div class="ring" style="top:548px;"></div>
+    <div class="hole" style="top:800px;"></div><div class="ring" style="top:788px;"></div>
+    <div class="grain"></div>
+    <div class="step-badge"><div class="num">3</div><div class="lbl">STEP</div></div>
+    <div class="content" style="right:340px;">
+        <div class="eyebrow">子句總覽</div>
+        <div class="slide-title">英文有<span class="marker-hl">三大子句</span></div>
+        <div class="postit blue" style="position:relative;margin-top:26px;width:1150px;">
+            <b>名詞子句</b>：當名詞用，可以當主詞／受詞／補語<br>例：<b>What he said</b> surprised everyone.
+        </div>
+        <div class="postit green" style="position:relative;margin-top:20px;width:1150px;">
+            <b>形容詞子句</b>（今天主角）：修飾名詞<br>例：I know a girl <b>who plays the piano well</b>.
+        </div>
+        <div class="postit pink" style="position:relative;margin-top:20px;width:1150px;">
+            <b>副詞子句</b>：修飾整句話（原因、時間、條件…）<br>例：She cried <b>because she was sad</b>.
+        </div>
+    </div>
+    <div class="footer-tag">STEP 3 · 子句功能</div><div class="page-num">7</div>
+</section>
+
+<!-- ============================================================ -->
+<!-- SLIDE 7 — 1-3 教學示範例句 -->
+<!-- ============================================================ -->
+<section class="slide">
+    <div class="notebook"></div><div class="rule-lines"></div><div class="margin-line"></div><div class="spiral"></div>
+    <div class="hole" style="top:80px;"></div><div class="ring" style="top:68px;"></div>
+    <div class="hole" style="top:320px;"></div><div class="ring" style="top:308px;"></div>
+    <div class="hole" style="top:560px;"></div><div class="ring" style="top:548px;"></div>
+    <div class="hole" style="top:800px;"></div><div class="ring" style="top:788px;"></div>
+    <div class="grain"></div>
+    <div class="content">
+        <div class="eyebrow">1-3 教學示範例句</div>
+        <div class="slide-title">判斷句中的<span class="marker-hl">子句類型</span></div>
+        <div class="list-block">
+            <span class="tag tag-easy">簡單</span>
+            <div class="item easy editable">① <b>What he said</b> surprised everyone.（名詞子句，當主詞）</div>
+            <div class="item easy editable">② I know a girl <b>who plays the piano well</b>.（形容詞子句，修飾girl）</div>
+            <div class="item easy editable">③ She cried <b>because she was sad</b>.（副詞子句）</div>
+        </div>
+        <div class="list-block">
+            <span class="tag tag-hard">學測頂標</span>
+            <div class="item hard editable">① <b>Whoever arrives first</b> will get the best seat, which is placed near the stage.</div>
+            <div class="item hard editable">② The reason <b>why he quit his job</b> remains unclear <b>even though many people have asked him</b>.</div>
+        </div>
+    </div>
+    <div class="footer-tag">STEP 3 · 子句功能</div><div class="page-num">8</div>
+</section>
+
+<!-- ============================================================ -->
+<!-- SLIDE 8 — 1-3 學生練習 -->
+<!-- ============================================================ -->
+<section class="slide">
+    <div class="notebook"></div><div class="rule-lines"></div><div class="margin-line"></div><div class="spiral"></div>
+    <div class="hole" style="top:80px;"></div><div class="ring" style="top:68px;"></div>
+    <div class="hole" style="top:320px;"></div><div class="ring" style="top:308px;"></div>
+    <div class="hole" style="top:560px;"></div><div class="ring" style="top:548px;"></div>
+    <div class="hole" style="top:800px;"></div><div class="ring" style="top:788px;"></div>
+    <div class="grain"></div>
+    <div class="content">
+        <div class="eyebrow">1-3 學生練習</div>
+        <div class="slide-title">判斷底線是哪種子句</div>
+        <div class="list-block">
+            <span class="tag tag-easy">簡單</span>
+            <div class="qa"><span class="qtext editable">1. I don't know <u>what time it is</u>.</span><span class="ans-toggle">看答案</span><span class="ans-text">名詞子句（當know的受詞）</span></div>
+            <div class="qa"><span class="qtext editable">2. The book <u>that is on the table</u> belongs to me.</span><span class="ans-toggle">看答案</span><span class="ans-text">形容詞子句（修飾book）</span></div>
+            <div class="qa"><span class="qtext editable">3. He left early <u>because he felt sick</u>.</span><span class="ans-toggle">看答案</span><span class="ans-text">副詞子句</span></div>
+        </div>
+        <div class="list-block">
+            <span class="tag tag-hard">學測頂標</span>
+            <div class="qa"><span class="qtext editable">1. <u>Whether she will come or not</u> depends on the weather, which nobody can predict.</span><span class="ans-toggle">看答案</span><span class="ans-text">Whether=名詞子句(主詞)；which=形容詞子句(非限定)</span></div>
+            <div class="qa"><span class="qtext editable">2. The city <u>where I was born</u> has changed a lot <u>since I moved away</u>.</span><span class="ans-toggle">看答案</span><span class="ans-text">where=形容詞子句；since=副詞子句</span></div>
+        </div>
+    </div>
+    <div class="footer-tag">STEP 3 · 子句功能</div><div class="page-num">9</div>
+</section>
+
+<!-- ============================================================ -->
+<!-- SLIDE 9 — STEP4 形容詞子句位置(原0課) -->
+<!-- ============================================================ -->
+<section class="slide">
+    <div class="notebook"></div><div class="rule-lines"></div><div class="margin-line"></div><div class="spiral"></div>
+    <div class="hole" style="top:80px;"></div><div class="ring" style="top:68px;"></div>
+    <div class="hole" style="top:320px;"></div><div class="ring" style="top:308px;"></div>
+    <div class="hole" style="top:560px;"></div><div class="ring" style="top:548px;"></div>
+    <div class="hole" style="top:800px;"></div><div class="ring" style="top:788px;"></div>
+    <div class="grain"></div>
+    <div class="step-badge"><div class="num">4</div><div class="lbl">STEP</div></div>
+    <div class="content" style="right:340px;">
+        <div class="eyebrow">今天的主角登場</div>
+        <div class="slide-title">形容詞子句要放在名詞<span class="marker-hl">後面</span></div>
+        <div class="list-block">
+            <div class="item easy editable">中文習慣：修飾語放<b>前面</b> ——「<b>昨天買的</b>書」</div>
+            <div class="item easy editable">英文習慣：修飾語太長（一整句話）要放<b>後面</b></div>
+        </div>
+        <div class="postit" style="position:relative;margin-top:30px;width:1150px;">
+            中：我昨天買的那本書弄丟了。<br>
+            英：The book <b>that I bought yesterday</b> is lost.
+        </div>
+        <div class="item easy editable" style="margin-top:30px;">結論：修飾名詞的一整句話，要用一個連接詞接在名詞後面——這個連接詞就是今天的主角。</div>
+    </div>
+    <div class="footer-tag">STEP 4 · 位置觀念</div><div class="page-num">10</div>
+</section>
+
+<!-- ============================================================ -->
+<!-- SLIDE 10 — STEP5 代名詞→關係代名詞過渡 -->
+<!-- ============================================================ -->
+<section class="slide">
+    <div class="notebook"></div><div class="rule-lines"></div><div class="margin-line"></div><div class="spiral"></div>
+    <div class="hole" style="top:80px;"></div><div class="ring" style="top:68px;"></div>
+    <div class="hole" style="top:320px;"></div><div class="ring" style="top:308px;"></div>
+    <div class="hole" style="top:560px;"></div><div class="ring" style="top:548px;"></div>
+    <div class="hole" style="top:800px;"></div><div class="ring" style="top:788px;"></div>
+    <div class="grain"></div>
+    <div class="step-badge"><div class="num">5</div><div class="lbl">STEP</div></div>
+    <div class="content" style="right:340px;">
+        <div class="eyebrow">複習 → 銜接新觀念</div>
+        <div class="slide-title">關係代名詞 ＝<span class="marker-hl">代名詞 ＋ 連接詞</span></div>
+        <div class="list-block">
+            <div class="item easy editable">複習：代名詞是用來代替一個名詞，避免重複。</div>
+            <div class="item easy editable">He is my brother. He is a doctor. → 不想重複 He...</div>
+            <div class="item hard editable">關係代名詞多了一個功能：除了「代替名詞」，還能同時<b>當連接詞</b>，把兩句話合成一句！</div>
+        </div>
+        <div class="postit green" style="position:relative;margin-top:30px;width:1150px;">
+            接下來我們就用「拆句 → 合句」的練習，實際感受這個雙重功能。
+        </div>
+    </div>
+    <div class="footer-tag">STEP 5 · 關係代名詞</div><div class="page-num">11</div>
+</section>
+
+<!-- ============================================================ -->
+<!-- SLIDE 11 — 2-2 教學示範例句 -->
+<!-- ============================================================ -->
+<section class="slide">
+    <div class="notebook"></div><div class="rule-lines"></div><div class="margin-line"></div><div class="spiral"></div>
+    <div class="hole" style="top:80px;"></div><div class="ring" style="top:68px;"></div>
+    <div class="hole" style="top:320px;"></div><div class="ring" style="top:308px;"></div>
+    <div class="hole" style="top:560px;"></div><div class="ring" style="top:548px;"></div>
+    <div class="hole" style="top:800px;"></div><div class="ring" style="top:788px;"></div>
+    <div class="grain"></div>
+    <div class="content">
+        <div class="eyebrow">拆句合句 教學示範</div>
+        <div class="slide-title">先找<span class="marker-hl">相同的名詞</span>，再用 that 連接</div>
+        <div class="list-block">
+            <span class="tag tag-easy">簡單</span>
+            <div class="item easy editable">① I have a friend. + The friend lives in Taipei. → I have a friend <b>that lives in Taipei</b>.</div>
+            <div class="item easy editable">② She bought a car. + The car is red. → She bought a car <b>that is red</b>.</div>
+            <div class="item easy editable">③ He is reading a book. + I gave him the book. → He is reading a book <b>that I gave him</b>.</div>
+        </div>
+        <div class="list-block">
+            <span class="tag tag-hard">學測頂標</span>
+            <div class="item hard editable">① The scientist published a paper <b>that challenged a theory that had been accepted for decades</b>.（雙層形容詞子句）</div>
+            <div class="item hard editable">② Many students admire the professor <b>whose research has influenced policies worldwide</b>.（用that會卡住，需改用whose）</div>
+        </div>
+    </div>
+    <div class="footer-tag">STEP 5 · 拆句合句</div><div class="page-num">12</div>
+</section>
+
+<!-- ============================================================ -->
+<!-- SLIDE 12 — 2-2 學生練習 -->
+<!-- ============================================================ -->
+<section class="slide">
+    <div class="notebook"></div><div class="rule-lines"></div><div class="margin-line"></div><div class="spiral"></div>
+    <div class="hole" style="top:80px;"></div><div class="ring" style="top:68px;"></div>
+    <div class="hole" style="top:320px;"></div><div class="ring" style="top:308px;"></div>
+    <div class="hole" style="top:560px;"></div><div class="ring" style="top:548px;"></div>
+    <div class="hole" style="top:800px;"></div><div class="ring" style="top:788px;"></div>
+    <div class="grain"></div>
+    <div class="content">
+        <div class="eyebrow">2-2 學生練習</div>
+        <div class="slide-title">合併成一句</div>
+        <div class="list-block">
+            <span class="tag tag-easy">簡單</span>
+            <div class="qa"><span class="qtext editable">1. I met a man. + The man works at a hospital.</span><span class="ans-toggle">看答案</span><span class="ans-text">I met a man that works at a hospital.</span></div>
+            <div class="qa"><span class="qtext editable">2. This is the movie. + Everyone is talking about the movie.</span><span class="ans-toggle">看答案</span><span class="ans-text">This is the movie that everyone is talking about.</span></div>
+            <div class="qa"><span class="qtext editable">3. She wrote a letter. + The letter made her mother cry.</span><span class="ans-toggle">看答案</span><span class="ans-text">She wrote a letter that made her mother cry.</span></div>
+        </div>
+        <div class="list-block">
+            <span class="tag tag-hard">學測頂標</span>
+            <div class="qa"><span class="qtext editable">1. The company launched a product. + The product received criticism that no one had expected.</span><span class="ans-toggle">看答案</span><span class="ans-text">The company launched a product that received criticism that no one had expected.</span></div>
+            <div class="qa"><span class="qtext editable">2. The novel describes a war. + The war changed the course of history.</span><span class="ans-toggle">看答案</span><span class="ans-text">The novel describes a war that changed the course of history.</span></div>
+        </div>
+    </div>
+    <div class="footer-tag">STEP 5 · 拆句合句</div><div class="page-num">13</div>
+</section>
+
+<!-- ============================================================ -->
+<!-- SLIDE 13 — STEP6 3-1 概念+例句 -->
+<!-- ============================================================ -->
+<section class="slide">
+    <div class="notebook"></div><div class="rule-lines"></div><div class="margin-line"></div><div class="spiral"></div>
+    <div class="hole" style="top:80px;"></div><div class="ring" style="top:68px;"></div>
+    <div class="hole" style="top:320px;"></div><div class="ring" style="top:308px;"></div>
+    <div class="hole" style="top:560px;"></div><div class="ring" style="top:548px;"></div>
+    <div class="hole" style="top:800px;"></div><div class="ring" style="top:788px;"></div>
+    <div class="grain"></div>
+    <div class="step-badge"><div class="num">6</div><div class="lbl">STEP</div></div>
+    <div class="content" style="right:340px;">
+        <div class="eyebrow">3-1 核心判斷力</div>
+        <div class="slide-title">關代代替<span class="marker-hl">主詞</span>還是<span class="marker-hl">受詞</span>？</div>
+        <div class="postit blue" style="position:relative;width:1150px;">
+            口訣：看先行詞原本在子句裡的位置——動作是他<b>發出</b>的（主詞），還是他<b>承受</b>的（受詞）？
+        </div>
+        <div class="list-block">
+            <span class="tag tag-easy">簡單</span>
+            <div class="item easy editable">① The girl <b>who</b> sings well is my sister.（主詞）</div>
+            <div class="item easy editable">② The girl <b>who(m)</b> I met yesterday is my sister.（受詞）</div>
+        </div>
+        <div class="list-block">
+            <span class="tag tag-hard">學測頂標</span>
+            <div class="item hard editable">① The witness <b>who</b> claimed to have seen the accident later changed her statement.（主詞，含插入片語）</div>
+        </div>
+    </div>
+    <div class="footer-tag">STEP 6 · 主詞受詞判斷</div><div class="page-num">14</div>
+</section>
+
+<!-- ============================================================ -->
+<!-- SLIDE 14 — 3-1 學生練習 -->
+<!-- ============================================================ -->
+<section class="slide">
+    <div class="notebook"></div><div class="rule-lines"></div><div class="margin-line"></div><div class="spiral"></div>
+    <div class="hole" style="top:80px;"></div><div class="ring" style="top:68px;"></div>
+    <div class="hole" style="top:320px;"></div><div class="ring" style="top:308px;"></div>
+    <div class="hole" style="top:560px;"></div><div class="ring" style="top:548px;"></div>
+    <div class="hole" style="top:800px;"></div><div class="ring" style="top:788px;"></div>
+    <div class="grain"></div>
+    <div class="content">
+        <div class="eyebrow">3-1 學生練習</div>
+        <div class="slide-title">判斷底線關代是主詞還是受詞</div>
+        <div class="list-block">
+            <span class="tag tag-easy">簡單</span>
+            <div class="qa"><span class="qtext editable">1. The man <u>who</u> called you is my uncle.</span><span class="ans-toggle">看答案</span><span class="ans-text">主詞</span></div>
+            <div class="qa"><span class="qtext editable">2. The cake <u>that</u> she made was delicious.</span><span class="ans-toggle">看答案</span><span class="ans-text">受詞</span></div>
+            <div class="qa"><span class="qtext editable">3. Students <u>who</u> study hard usually get good grades.</span><span class="ans-toggle">看答案</span><span class="ans-text">主詞</span></div>
+        </div>
+        <div class="list-block">
+            <span class="tag tag-hard">學測頂標</span>
+            <div class="qa"><span class="qtext editable">1. The report <u>which</u> the journalist wrote in a hurry contained several factual errors.</span><span class="ans-toggle">看答案</span><span class="ans-text">受詞</span></div>
+            <div class="qa"><span class="qtext editable">2. The employee <u>who</u> had been warned twice was finally dismissed.</span><span class="ans-toggle">看答案</span><span class="ans-text">主詞</span></div>
+        </div>
+    </div>
+    <div class="footer-tag">STEP 6 · 主詞受詞判斷</div><div class="page-num">15</div>
+</section>
+
+<!-- ============================================================ -->
+<!-- SLIDE 15 — 3-2 關係代名詞表格 -->
+<!-- ============================================================ -->
+<section class="slide">
+    <div class="notebook"></div><div class="rule-lines"></div><div class="margin-line"></div><div class="spiral"></div>
+    <div class="hole" style="top:80px;"></div><div class="ring" style="top:68px;"></div>
+    <div class="hole" style="top:320px;"></div><div class="ring" style="top:308px;"></div>
+    <div class="hole" style="top:560px;"></div><div class="ring" style="top:548px;"></div>
+    <div class="hole" style="top:800px;"></div><div class="ring" style="top:788px;"></div>
+    <div class="grain"></div>
+    <div class="content">
+        <div class="eyebrow">3-2 關係代名詞家族</div>
+        <div class="slide-title">who / whom / whose / which / that</div>
+        <table class="rule-table">
+            <thead><tr><th>先行詞</th><th>當主詞</th><th>當受詞</th><th>表所有格</th></tr></thead>
+            <tbody>
+                <tr><td>人</td><td>who / that</td><td>who(m) / that</td><td>whose</td></tr>
+                <tr><td>物</td><td>which / that</td><td>which / that</td><td>whose（of which）</td></tr>
+            </tbody>
+        </table>
+        <div class="postit green" style="margin-top:30px;width:1200px;">that 幾乎萬用，但也有「不能用」跟「一定要用」的場合——留到 STEP 8 細講。</div>
+    </div>
+    <div class="footer-tag">STEP 6 · 關代表格</div><div class="page-num">16</div>
+</section>
+
+<!-- ============================================================ -->
+<!-- SLIDE 16 — 3-2 教學示範例句 -->
+<!-- ============================================================ -->
+<section class="slide">
+    <div class="notebook"></div><div class="rule-lines"></div><div class="margin-line"></div><div class="spiral"></div>
+    <div class="hole" style="top:80px;"></div><div class="ring" style="top:68px;"></div>
+    <div class="hole" style="top:320px;"></div><div class="ring" style="top:308px;"></div>
+    <div class="hole" style="top:560px;"></div><div class="ring" style="top:548px;"></div>
+    <div class="hole" style="top:800px;"></div><div class="ring" style="top:788px;"></div>
+    <div class="grain"></div>
+    <div class="content">
+        <div class="eyebrow">3-2 教學示範例句</div>
+        <div class="slide-title">套用表格<span class="marker-hl">選對關係詞</span></div>
+        <div class="list-block">
+            <span class="tag tag-easy">簡單</span>
+            <div class="item easy editable">① The boy <b>who</b> is standing there is my classmate.</div>
+            <div class="item easy editable">② The pen <b>which</b> I bought yesterday is missing.</div>
+            <div class="item easy editable">③ This is the woman <b>whose</b> son won the competition.</div>
+        </div>
+        <div class="list-block">
+            <span class="tag tag-hard">學測頂標</span>
+            <div class="item hard editable">① The CEO, <b>whose</b> decisions often shocked the board, resigned unexpectedly last week.</div>
+            <div class="item hard editable">② The data <b>which/that</b> the researchers collected over five years revealed a surprising trend.</div>
+        </div>
+    </div>
+    <div class="footer-tag">STEP 6 · 關代表格</div><div class="page-num">17</div>
+</section>
+
+<!-- ============================================================ -->
+<!-- SLIDE 17 — 3-2 練習 Q1-5 -->
+<!-- ============================================================ -->
+<section class="slide">
+    <div class="notebook"></div><div class="rule-lines"></div><div class="margin-line"></div><div class="spiral"></div>
+    <div class="hole" style="top:80px;"></div><div class="ring" style="top:68px;"></div>
+    <div class="hole" style="top:320px;"></div><div class="ring" style="top:308px;"></div>
+    <div class="hole" style="top:560px;"></div><div class="ring" style="top:548px;"></div>
+    <div class="hole" style="top:800px;"></div><div class="ring" style="top:788px;"></div>
+    <div class="grain"></div>
+    <div class="content">
+        <div class="eyebrow">3-2 學生練習（1/2）</div>
+        <div class="slide-title">選出正確關係詞 Q1–5</div>
+        <div class="list-block">
+            <div class="qa"><span class="qtext editable">1. The teacher ___ teaches us math is very strict. (A) whom (B) who</span><span class="ans-toggle">看答案</span><span class="ans-text">B</span></div>
+            <div class="qa"><span class="qtext editable">2. The novel ___ I read last summer was fascinating. (A) which (B) whose</span><span class="ans-toggle">看答案</span><span class="ans-text">A</span></div>
+            <div class="qa"><span class="qtext editable">3. I know a family ___ house was destroyed in the fire. (A) who (B) whose</span><span class="ans-toggle">看答案</span><span class="ans-text">B</span></div>
+            <div class="qa"><span class="qtext editable">4. The man ___ we invited to the party didn't show up. (A) whom (B) whose</span><span class="ans-toggle">看答案</span><span class="ans-text">A</span></div>
+            <div class="qa"><span class="qtext editable">5. The company ___ products are sold worldwide is expanding rapidly. (A) whose (B) which</span><span class="ans-toggle">看答案</span><span class="ans-text">A</span></div>
+        </div>
+    </div>
+    <div class="footer-tag">STEP 6 · 關代表格</div><div class="page-num">18</div>
+</section>
+
+<!-- ============================================================ -->
+<!-- SLIDE 18 — 3-2 練習 Q6-10 -->
+<!-- ============================================================ -->
+<section class="slide">
+    <div class="notebook"></div><div class="rule-lines"></div><div class="margin-line"></div><div class="spiral"></div>
+    <div class="hole" style="top:80px;"></div><div class="ring" style="top:68px;"></div>
+    <div class="hole" style="top:320px;"></div><div class="ring" style="top:308px;"></div>
+    <div class="hole" style="top:560px;"></div><div class="ring" style="top:548px;"></div>
+    <div class="hole" style="top:800px;"></div><div class="ring" style="top:788px;"></div>
+    <div class="grain"></div>
+    <div class="content">
+        <div class="eyebrow">3-2 學生練習（2/2）</div>
+        <div class="slide-title">選出正確關係詞 Q6–10</div>
+        <div class="list-block">
+            <div class="qa"><span class="qtext editable">6. The scientist ___ theory was once ridiculed is now widely respected. (A) who (B) whose</span><span class="ans-toggle">看答案</span><span class="ans-text">B</span></div>
+            <div class="qa"><span class="qtext editable">7. The players ___ performance impressed the coach were selected for the finals. (A) which (B) whose</span><span class="ans-toggle">看答案</span><span class="ans-text">B</span></div>
+            <div class="qa"><span class="qtext editable">8. The book, ___ cover was torn, was still readable. (A) which (B) whose</span><span class="ans-toggle">看答案</span><span class="ans-text">B</span></div>
+            <div class="qa"><span class="qtext editable">9. The candidate ___ speech moved the audience won the election. (A) whose (B) who</span><span class="ans-toggle">看答案</span><span class="ans-text">A</span></div>
+            <div class="qa"><span class="qtext editable">10. The bridge, ___ construction took over a decade, finally opened. (A) which (B) whose</span><span class="ans-toggle">看答案</span><span class="ans-text">B</span></div>
+        </div>
+        <div class="postit pink" style="margin-top:20px;width:1200px;">第4–10題刻意加重 whose 比例，因為所有格常是學生最弱的一環。</div>
+    </div>
+    <div class="footer-tag">STEP 6 · 關代表格</div><div class="page-num">19</div>
+</section>
+
+<!-- ============================================================ -->
+<!-- SLIDE 19 — STEP7 4-1 概念+例句 -->
+<!-- ============================================================ -->
+<section class="slide">
+    <div class="notebook"></div><div class="rule-lines"></div><div class="margin-line"></div><div class="spiral"></div>
+    <div class="hole" style="top:80px;"></div><div class="ring" style="top:68px;"></div>
+    <div class="hole" style="top:320px;"></div><div class="ring" style="top:308px;"></div>
+    <div class="hole" style="top:560px;"></div><div class="ring" style="top:548px;"></div>
+    <div class="hole" style="top:800px;"></div><div class="ring" style="top:788px;"></div>
+    <div class="grain"></div>
+    <div class="step-badge"><div class="num">7</div><div class="lbl">STEP</div></div>
+    <div class="content" style="right:340px;">
+        <div class="eyebrow">4-1 省略判斷</div>
+        <div class="slide-title"><span class="marker-hl">受詞可省，主詞不可</span></div>
+        <div class="postit blue" style="position:relative;width:1150px;">
+            回到STEP1的伏筆：受詞省略後子句仍有主詞+動詞，結構完整；主詞省略後子句會沒有主詞，動詞失去依靠。
+        </div>
+        <div class="list-block">
+            <span class="tag tag-easy">簡單</span>
+            <div class="item easy editable">① The book (that) I bought is interesting.（受詞，可省）</div>
+            <div class="item easy editable">② The man <b>who</b> called you is my teacher.（主詞，不可省）</div>
+        </div>
+        <div class="list-block">
+            <span class="tag tag-hard">學測頂標</span>
+            <div class="item hard editable">① The plan (that) the manager proposed at the meeting was rejected by the board.（受詞可省，中間插入片語）</div>
+        </div>
+    </div>
+    <div class="footer-tag">STEP 7 · 省略與化簡</div><div class="page-num">20</div>
+</section>
+
+<!-- ============================================================ -->
+<!-- SLIDE 20 — 4-1 學生練習 -->
+<!-- ============================================================ -->
+<section class="slide">
+    <div class="notebook"></div><div class="rule-lines"></div><div class="margin-line"></div><div class="spiral"></div>
+    <div class="hole" style="top:80px;"></div><div class="ring" style="top:68px;"></div>
+    <div class="hole" style="top:320px;"></div><div class="ring" style="top:308px;"></div>
+    <div class="hole" style="top:560px;"></div><div class="ring" style="top:548px;"></div>
+    <div class="hole" style="top:800px;"></div><div class="ring" style="top:788px;"></div>
+    <div class="grain"></div>
+    <div class="content">
+        <div class="eyebrow">4-1 學生練習</div>
+        <div class="slide-title">能不能省略？可以的話請改寫</div>
+        <div class="list-block">
+            <span class="tag tag-easy">簡單</span>
+            <div class="qa"><span class="qtext editable">1. The movie (that) I watched last night was boring.</span><span class="ans-toggle">看答案</span><span class="ans-text">可省：The movie I watched last night was boring.</span></div>
+            <div class="qa"><span class="qtext editable">2. The girl who won the race is my classmate.</span><span class="ans-toggle">看答案</span><span class="ans-text">不可省（主詞）</span></div>
+            <div class="qa"><span class="qtext editable">3. The letter (that) he wrote never arrived.</span><span class="ans-toggle">看答案</span><span class="ans-text">可省：The letter he wrote never arrived.</span></div>
+        </div>
+        <div class="list-block">
+            <span class="tag tag-hard">學測頂標</span>
+            <div class="qa"><span class="qtext editable">1. The article (that) the professor recommended sparked a heated debate in class.</span><span class="ans-toggle">看答案</span><span class="ans-text">可省：The article the professor recommended sparked a heated debate in class.</span></div>
+            <div class="qa"><span class="qtext editable">2. The witness who testified in court received death threats afterward.</span><span class="ans-toggle">看答案</span><span class="ans-text">不可省（主詞）</span></div>
+        </div>
+    </div>
+    <div class="footer-tag">STEP 7 · 省略與化簡</div><div class="page-num">21</div>
+</section>
+
+<!-- ============================================================ -->
+<!-- SLIDE 21 — 4-2 概念（主動被動複習+規則） -->
+<!-- ============================================================ -->
+<section class="slide">
+    <div class="notebook"></div><div class="rule-lines"></div><div class="margin-line"></div><div class="spiral"></div>
+    <div class="hole" style="top:80px;"></div><div class="ring" style="top:68px;"></div>
+    <div class="hole" style="top:320px;"></div><div class="ring" style="top:308px;"></div>
+    <div class="hole" style="top:560px;"></div><div class="ring" style="top:548px;"></div>
+    <div class="hole" style="top:800px;"></div><div class="ring" style="top:788px;"></div>
+    <div class="grain"></div>
+    <div class="content">
+        <div class="eyebrow">4-2 分詞片語化簡</div>
+        <div class="slide-title">主詞省略時，動詞要<span class="marker-hl">改成分詞</span></div>
+        <div class="postit green" style="position:relative;width:1150px;">
+            30秒複習：先行詞是動作發出者→主動→Ving；先行詞是動作承受者→被動→Vpp。
+        </div>
+        <div class="list-block">
+            <span class="tag tag-easy">簡單（有be動詞 vs 無be動詞）</span>
+            <div class="item easy editable">① The man <b>who is</b> standing there... → The man <b>standing there</b>...（有be動詞，直接刪）</div>
+            <div class="item easy editable">② The letter <b>which was</b> written by him... → The letter <b>written by him</b>...（留Vpp）</div>
+            <div class="item easy editable">③ The train <b>which leaves</b> at 6... → The train <b>leaving</b> at 6...（無be動詞，主動改Ving）</div>
+        </div>
+    </div>
+    <div class="footer-tag">STEP 7 · 省略與化簡</div><div class="page-num">22</div>
+</section>
+
+<!-- ============================================================ -->
+<!-- SLIDE 22 — 4-2 學測頂標例句+練習 -->
+<!-- ============================================================ -->
+<section class="slide">
+    <div class="notebook"></div><div class="rule-lines"></div><div class="margin-line"></div><div class="spiral"></div>
+    <div class="hole" style="top:80px;"></div><div class="ring" style="top:68px;"></div>
+    <div class="hole" style="top:320px;"></div><div class="ring" style="top:308px;"></div>
+    <div class="hole" style="top:560px;"></div><div class="ring" style="top:548px;"></div>
+    <div class="hole" style="top:800px;"></div><div class="ring" style="top:788px;"></div>
+    <div class="grain"></div>
+    <div class="content">
+        <div class="eyebrow">4-2 教學示範（學測頂標）</div>
+        <div class="slide-title">同句可能<span class="marker-hl">同時出現 Ving 和 Vpp</span></div>
+        <div class="list-block">
+            <span class="tag tag-hard">學測頂標</span>
+            <div class="item hard editable">① The proposal <b>which was submitted</b> by the intern... → The proposal <b>submitted by the intern</b>...（Vpp被動）</div>
+            <div class="item hard editable">② Passengers <b>who arrive</b> late... the flight <b>departing</b> at noon. → Passengers <b>arriving</b> late... the flight <b>departing</b> at noon.（兩個Ving，需分別判斷）</div>
+        </div>
+        <div class="list-block" style="margin-top:36px;">
+            <span class="tag tag-easy">學生練習·簡單</span>
+            <div class="qa"><span class="qtext editable">1. The boy who is playing basketball is my brother.</span><span class="ans-toggle">看答案</span><span class="ans-text">The boy playing basketball is my brother.（主動Ving）</span></div>
+            <div class="qa"><span class="qtext editable">2. The window that was broken by the storm needs repair.</span><span class="ans-toggle">看答案</span><span class="ans-text">The window broken by the storm needs repair.（被動Vpp）</span></div>
+            <div class="qa"><span class="qtext editable">3. The students who study in the library are preparing for exams.</span><span class="ans-toggle">看答案</span><span class="ans-text">The students studying in the library...（主動Ving）</span></div>
+        </div>
+    </div>
+    <div class="footer-tag">STEP 7 · 省略與化簡</div><div class="page-num">23</div>
+</section>
+
+<!-- ============================================================ -->
+<!-- SLIDE 23 — 4-2 學測頂標練習 + 總覽表 -->
+<!-- ============================================================ -->
+<section class="slide">
+    <div class="notebook"></div><div class="rule-lines"></div><div class="margin-line"></div><div class="spiral"></div>
+    <div class="hole" style="top:80px;"></div><div class="ring" style="top:68px;"></div>
+    <div class="hole" style="top:320px;"></div><div class="ring" style="top:308px;"></div>
+    <div class="hole" style="top:560px;"></div><div class="ring" style="top:548px;"></div>
+    <div class="hole" style="top:800px;"></div><div class="ring" style="top:788px;"></div>
+    <div class="grain"></div>
+    <div class="content">
+        <div class="eyebrow">4-2 學生練習（學測頂標）+ 總覽表</div>
+        <div class="slide-title">省略 vs Ving vs Vpp <span class="marker-hl">總覽</span></div>
+        <div class="list-block">
+            <span class="tag tag-hard">學測頂標</span>
+            <div class="qa"><span class="qtext editable">1. The report which was written in a rush contained several errors that were later corrected by the editor.</span><span class="ans-toggle">看答案</span><span class="ans-text">...written in a rush contained several errors later corrected by the editor.（皆為Vpp）</span></div>
+            <div class="qa"><span class="qtext editable">2. Employees who fail to meet the targets set by the manager will be reviewed.</span><span class="ans-toggle">看答案</span><span class="ans-text">Employees failing to meet the targets set by the manager...（failing主動；set被動）</span></div>
+        </div>
+        <table class="rule-table" style="margin-top:24px;font-size:26px;">
+            <thead><tr><th>情況</th><th>條件</th><th>範例</th></tr></thead>
+            <tbody>
+                <tr><td>直接省略關代</td><td>關代當受詞</td><td>The book (that) I bought...</td></tr>
+                <tr><td>改Ving</td><td>關代當主詞・無be動詞・主動</td><td>the train leaving at 6</td></tr>
+                <tr><td>改Vpp</td><td>關代當主詞・無be動詞・被動</td><td>the report written by him</td></tr>
+                <tr><td>只留分詞</td><td>關代當主詞・有be動詞</td><td>the man (who is) standing there</td></tr>
+            </tbody>
+        </table>
+    </div>
+    <div class="footer-tag">STEP 7 · 省略與化簡</div><div class="page-num">24</div>
+</section>
+
+<!-- ============================================================ -->
+<!-- SLIDE 24 — STEP8 5-1 概念+例句 -->
+<!-- ============================================================ -->
+<section class="slide">
+    <div class="notebook"></div><div class="rule-lines"></div><div class="margin-line"></div><div class="spiral"></div>
+    <div class="hole" style="top:80px;"></div><div class="ring" style="top:68px;"></div>
+    <div class="hole" style="top:320px;"></div><div class="ring" style="top:308px;"></div>
+    <div class="hole" style="top:560px;"></div><div class="ring" style="top:548px;"></div>
+    <div class="hole" style="top:800px;"></div><div class="ring" style="top:788px;"></div>
+    <div class="grain"></div>
+    <div class="step-badge"><div class="num">8</div><div class="lbl">STEP</div></div>
+    <div class="content" style="right:340px;">
+        <div class="eyebrow">5-1 that的特殊脾氣</div>
+        <div class="slide-title">什麼時候<span class="marker-hl">一定要用 that</span>？</div>
+        <div class="postit pink" style="position:relative;width:1150px;">
+            信號字：the only／the very／all／no／序數詞／最高級／all-類代名詞（everything, nothing...）
+        </div>
+        <div class="list-block">
+            <span class="tag tag-easy">簡單</span>
+            <div class="item easy editable">① This is <b>the only</b> book <b>that</b> can solve your problem.</div>
+            <div class="item easy editable">② He is <b>the most interesting</b> person <b>that</b> I have ever met.（最高級）</div>
+            <div class="item easy editable">③ I have read <b>everything that</b> he wrote.</div>
+        </div>
+        <div class="list-block">
+            <span class="tag tag-hard">學測頂標</span>
+            <div class="item hard editable">① <b>The very reason that</b> she resigned has never been made public.</div>
+        </div>
+    </div>
+    <div class="footer-tag">STEP 8 · that的限制</div><div class="page-num">25</div>
+</section>
+
+<!-- ============================================================ -->
+<!-- SLIDE 25 — 5-1 學生練習 -->
+<!-- ============================================================ -->
+<section class="slide">
+    <div class="notebook"></div><div class="rule-lines"></div><div class="margin-line"></div><div class="spiral"></div>
+    <div class="hole" style="top:80px;"></div><div class="ring" style="top:68px;"></div>
+    <div class="hole" style="top:320px;"></div><div class="ring" style="top:308px;"></div>
+    <div class="hole" style="top:560px;"></div><div class="ring" style="top:548px;"></div>
+    <div class="hole" style="top:800px;"></div><div class="ring" style="top:788px;"></div>
+    <div class="grain"></div>
+    <div class="content">
+        <div class="eyebrow">5-1 學生練習</div>
+        <div class="slide-title">判斷是否必須用 that</div>
+        <div class="list-block">
+            <span class="tag tag-easy">簡單</span>
+            <div class="qa"><span class="qtext editable">1. He is the tallest student ___ I have ever taught. (A) that (B) who</span><span class="ans-toggle">看答案</span><span class="ans-text">A（最高級信號）</span></div>
+            <div class="qa"><span class="qtext editable">2. I like everything ___ she cooks. (A) which (B) that</span><span class="ans-toggle">看答案</span><span class="ans-text">B</span></div>
+            <div class="qa"><span class="qtext editable">3. The only person ___ can help you is Mr. Lin. (A) who (B) that</span><span class="ans-toggle">看答案</span><span class="ans-text">B</span></div>
+        </div>
+        <div class="list-block">
+            <span class="tag tag-hard">學測頂標</span>
+            <div class="qa"><span class="qtext editable">1. The first book that made him famous and the movie that followed were both huge successes. (A) which...which (B) that...that</span><span class="ans-toggle">看答案</span><span class="ans-text">B（序數詞the first信號）</span></div>
+            <div class="qa"><span class="qtext editable">2. The only student and his dog ___ appeared in the photo were both awarded. (A) who (B) that</span><span class="ans-toggle">看答案</span><span class="ans-text">B（人+物同時出現）</span></div>
+        </div>
+    </div>
+    <div class="footer-tag">STEP 8 · that的限制</div><div class="page-num">26</div>
+</section>
+
+<!-- ============================================================ -->
+<!-- SLIDE 26 — STEP9 5-2 概念+例句 -->
+<!-- ============================================================ -->
+<section class="slide">
+    <div class="notebook"></div><div class="rule-lines"></div><div class="margin-line"></div><div class="spiral"></div>
+    <div class="hole" style="top:80px;"></div><div class="ring" style="top:68px;"></div>
+    <div class="hole" style="top:320px;"></div><div class="ring" style="top:308px;"></div>
+    <div class="hole" style="top:560px;"></div><div class="ring" style="top:548px;"></div>
+    <div class="hole" style="top:800px;"></div><div class="ring" style="top:788px;"></div>
+    <div class="grain"></div>
+    <div class="step-badge"><div class="num">9</div><div class="lbl">STEP</div></div>
+    <div class="content" style="right:340px;">
+        <div class="eyebrow">5-2 一個逗號的差別</div>
+        <div class="slide-title">限定用法 <span class="marker-hl">vs</span> 非限定用法</div>
+        <div class="list-block">
+            <span class="tag tag-easy">簡單</span>
+            <div class="item easy editable">① I have two brothers <b>who are teachers</b>.（限定，可能還有其他兄弟）</div>
+            <div class="item easy editable">② I have two brothers, <b>who are teachers</b>.（非限定，只有兩個兄弟）</div>
+        </div>
+        <div class="postit blue" style="position:relative;width:1150px;margin-top:20px;">
+            非限定規則：要逗號・不能用that・關代不能省略・可用which指代整件事
+        </div>
+        <div class="list-block">
+            <span class="tag tag-hard">學測頂標</span>
+            <div class="item hard editable">① He failed the final exam, <b>which</b> disappointed his parents deeply.（which指代整件事）</div>
+        </div>
+    </div>
+    <div class="footer-tag">STEP 9 · 限定非限定</div><div class="page-num">27</div>
+</section>
+
+<!-- ============================================================ -->
+<!-- SLIDE 27 — 5-2 學生練習 -->
+<!-- ============================================================ -->
+<section class="slide">
+    <div class="notebook"></div><div class="rule-lines"></div><div class="margin-line"></div><div class="spiral"></div>
+    <div class="hole" style="top:80px;"></div><div class="ring" style="top:68px;"></div>
+    <div class="hole" style="top:320px;"></div><div class="ring" style="top:308px;"></div>
+    <div class="hole" style="top:560px;"></div><div class="ring" style="top:548px;"></div>
+    <div class="hole" style="top:800px;"></div><div class="ring" style="top:788px;"></div>
+    <div class="grain"></div>
+    <div class="content">
+        <div class="eyebrow">5-2 學生練習</div>
+        <div class="slide-title">判斷限定／非限定，選出正確關係詞</div>
+        <div class="list-block">
+            <span class="tag tag-easy">簡單</span>
+            <div class="qa"><span class="qtext editable">1. The book ___ is on the desk belongs to me. (A) that (B) , which,</span><span class="ans-toggle">看答案</span><span class="ans-text">A（限定）</span></div>
+            <div class="qa"><span class="qtext editable">2. My brother, ___ lives in the U.S., is coming home. (A) that (B) who</span><span class="ans-toggle">看答案</span><span class="ans-text">B（非限定不能用that）</span></div>
+            <div class="qa"><span class="qtext editable">3. Students ___ arrive late will not be admitted. (A) who (B) , who,</span><span class="ans-toggle">看答案</span><span class="ans-text">A（限定）</span></div>
+        </div>
+        <div class="list-block">
+            <span class="tag tag-hard">學測頂標</span>
+            <div class="qa"><span class="qtext editable">1. She won the scholarship, ___ came as a huge surprise to her family. (A) that (B) which</span><span class="ans-toggle">看答案</span><span class="ans-text">B（which指代整件事）</span></div>
+            <div class="qa"><span class="qtext editable">2. The novel, ___ was translated into 20 languages, brought fame ___ he had never expected. (A) which...that (B) that...which</span><span class="ans-toggle">看答案</span><span class="ans-text">A（第一格非限定用which，第二格限定用that）</span></div>
+        </div>
+    </div>
+    <div class="footer-tag">STEP 9 · 限定非限定</div><div class="page-num">28</div>
+</section>
+
+<!-- ============================================================ -->
+<!-- SLIDE 28 — 總結 易混淆總表 -->
+<!-- ============================================================ -->
+<section class="slide">
+    <div class="notebook"></div><div class="rule-lines"></div><div class="margin-line"></div><div class="spiral"></div>
+    <div class="hole" style="top:80px;"></div><div class="ring" style="top:68px;"></div>
+    <div class="hole" style="top:320px;"></div><div class="ring" style="top:308px;"></div>
+    <div class="hole" style="top:560px;"></div><div class="ring" style="top:548px;"></div>
+    <div class="hole" style="top:800px;"></div><div class="ring" style="top:788px;"></div>
+    <div class="grain"></div>
+    <div class="content">
+        <div class="eyebrow">STEP 10 · 總結</div>
+        <div class="slide-title">今天的<span class="marker-hl">易混淆總表</span></div>
+        <table class="rule-table" style="font-size:28px;">
+            <thead><tr><th>判斷點</th><th>規則</th></tr></thead>
+            <tbody>
+                <tr><td>先行詞是人還是物</td><td>who/whom/whose（人）vs which（物），that皆可</td></tr>
+                <tr><td>主詞還是受詞</td><td>主詞不可直接省略；受詞可整個省略</td></tr>
+                <tr><td>有無be動詞</td><td>有be動詞可直接刪掉「關代+be」</td></tr>
+                <tr><td>主動還是被動</td><td>主動改Ving；被動改Vpp</td></tr>
+                <tr><td>特殊信號字</td><td>the only/all/最高級/序數詞/all-類代名詞 → 必須用that</td></tr>
+                <tr><td>有無逗號</td><td>有逗號＝非限定，不能用that，關代不能省略</td></tr>
+            </tbody>
+        </table>
+    </div>
+    <div class="footer-tag">總結 · 易混淆總表</div><div class="page-num">29</div>
+</section>
+
+<!-- ============================================================ -->
+<!-- SLIDE 29 — 綜合練習 簡單 -->
+<!-- ============================================================ -->
+<section class="slide">
+    <div class="notebook"></div><div class="rule-lines"></div><div class="margin-line"></div><div class="spiral"></div>
+    <div class="hole" style="top:80px;"></div><div class="ring" style="top:68px;"></div>
+    <div class="hole" style="top:320px;"></div><div class="ring" style="top:308px;"></div>
+    <div class="hole" style="top:560px;"></div><div class="ring" style="top:548px;"></div>
+    <div class="hole" style="top:800px;"></div><div class="ring" style="top:788px;"></div>
+    <div class="grain"></div>
+    <div class="content">
+        <div class="eyebrow">綜合練習 · 簡單</div>
+        <div class="slide-title">混合以上所有規則</div>
+        <div class="list-block">
+            <div class="qa"><span class="qtext editable">1. The woman ___ is talking to my mom is my aunt. (A) who (B) that</span><span class="ans-toggle">看答案</span><span class="ans-text">兩者皆可（主詞用法）</span></div>
+            <div class="qa"><span class="qtext editable">2. The gift (that) my friend gave me was a book.</span><span class="ans-toggle">看答案</span><span class="ans-text">受詞可省</span></div>
+            <div class="qa"><span class="qtext editable">3. The car ___ was parked outside got towed. (A) parking (B) parked</span><span class="ans-toggle">看答案</span><span class="ans-text">B（被動Vpp）</span></div>
+        </div>
+        <div class="postit green" style="margin-top:40px;width:1200px;">先套用上一頁的總表，一步一步判斷，不要憑語感亂猜。</div>
+    </div>
+    <div class="footer-tag">總結 · 綜合練習</div><div class="page-num">30</div>
+</section>
+
+<!-- ============================================================ -->
+<!-- SLIDE 30 — 綜合練習 學測頂標 -->
+<!-- ============================================================ -->
+<section class="slide">
+    <div class="notebook"></div><div class="rule-lines"></div><div class="margin-line"></div><div class="spiral"></div>
+    <div class="hole" style="top:80px;"></div><div class="ring" style="top:68px;"></div>
+    <div class="hole" style="top:320px;"></div><div class="ring" style="top:308px;"></div>
+    <div class="hole" style="top:560px;"></div><div class="ring" style="top:548px;"></div>
+    <div class="hole" style="top:800px;"></div><div class="ring" style="top:788px;"></div>
+    <div class="grain"></div>
+    <div class="content">
+        <div class="eyebrow">綜合練習 · 學測頂標</div>
+        <div class="slide-title">挑戰題：一句多個判斷點</div>
+        <div class="list-block">
+            <div class="qa"><span class="qtext editable">1. The manager, ___ proposal was rejected twice, finally resigned, ___ shocked everyone. (A) whose...which (B) who...that</span><span class="ans-toggle">看答案</span><span class="ans-text">A（所有格whose；非限定指代整件事which）</span></div>
+        </div>
+        <div class="list-block" style="margin-top:30px;">
+            <div class="qtext editable" style="font-size:30px;line-height:1.7;">2. Among the candidates ___ applied for the position, <b>the only one</b> ___ had prior experience was hired immediately, a decision ___ surprised no one.</div>
+        </div>
+        <div class="postit pink" style="margin-top:24px;width:1300px;">
+            這題較複雜，建議當堂用「討論」帶過：讓學生一步步套用總表判斷三個空格，而不是直接公布答案。
+        </div>
+    </div>
+    <div class="footer-tag">總結 · 綜合練習</div><div class="page-num">31</div>
+</section>
+
+<!-- ============================================================ -->
+<!-- SLIDE 31 — 結尾 -->
+<!-- ============================================================ -->
+<section class="slide">
+    <div class="notebook"></div><div class="rule-lines"></div><div class="margin-line"></div><div class="spiral"></div>
+    <div class="hole" style="top:80px;"></div><div class="ring" style="top:68px;"></div>
+    <div class="hole" style="top:320px;"></div><div class="ring" style="top:308px;"></div>
+    <div class="hole" style="top:560px;"></div><div class="ring" style="top:548px;"></div>
+    <div class="hole" style="top:800px;"></div><div class="ring" style="top:788px;"></div>
+    <div class="grain"></div>
+    <div class="content">
+        <div class="eyebrow">今天先到這裡</div>
+        <div class="slide-title">下次課預告：<span class="marker-hl">關係副詞</span></div>
+        <div class="list-block">
+            <div class="item easy editable">when / where / why —— 判斷口訣：「子句完不完整」</div>
+            <div class="item easy editable">as 引導的子句、what 為什麼不是形容詞子句</div>
+            <div class="item easy editable">介系詞＋關係代名詞：in which / on whom</div>
+        </div>
+        <div class="postit blue" style="position:relative;margin-top:40px;width:1150px;">
+            回家練習：把今天總表默寫一次，再挑3題學測題套用流程判斷。
+        </div>
+    </div>
+    <div class="footer-tag">形容詞子句教學 · 完</div><div class="page-num">32</div>
+</section>
+
+</main>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+/* ======================================================
+   SLIDE PRESENTATION CONTROLLER
+   ====================================================== */
+class SlidePresentation{
+    constructor(){
+        this.slides=document.querySelectorAll('.slide');
+        this.total=this.slides.length;
+        this.current=0;
+        this.stage=document.getElementById('deckStage');
+        this.editMode=false;
+        this.setupStageScale();
+        this.setupKeyboardNav();
+        this.setupTouchNav();
+        this.setupAnswerToggle();
+        this.setupEditMode();
+        this.showSlide(0);
+    }
+    setupStageScale(){
+        const scale=()=>{
+            const factor=Math.min(window.innerWidth/1920, window.innerHeight/1080);
+            const x=(window.innerWidth-1920*factor)/2;
+            const y=(window.innerHeight-1080*factor)/2;
+            this.stage.style.transform=`translate(${x}px, ${y}px) scale(${factor})`;
+        };
+        scale();
+        window.addEventListener('resize', scale);
+    }
+    showSlide(i){
+        this.current=Math.max(0, Math.min(i, this.total-1));
+        this.slides.forEach((s,idx)=>{
+            s.classList.toggle('active', idx===this.current);
+            s.classList.toggle('visible', idx===this.current);
+        });
+    }
+    next(){this.showSlide(this.current+1);}
+    prev(){this.showSlide(this.current-1);}
+    setupKeyboardNav(){
+        window.addEventListener('keydown',(e)=>{
+            if(this.editMode) return;
+            if(['ArrowRight','ArrowDown',' ','PageDown'].includes(e.key)){e.preventDefault();this.next();}
+            if(['ArrowLeft','ArrowUp','PageUp','Backspace'].includes(e.key)){e.preventDefault();this.prev();}
+            if(e.key==='Home'){this.showSlide(0);}
+            if(e.key==='End'){this.showSlide(this.total-1);}
+        });
+    }
+    setupTouchNav(){
+        let startX=0;
+        window.addEventListener('touchstart',(e)=>{startX=e.touches[0].clientX;});
+        window.addEventListener('touchend',(e)=>{
+            const dx=e.changedTouches[0].clientX-startX;
+            if(dx>60) this.prev();
+            if(dx<-60) this.next();
+        });
+    }
+    setupAnswerToggle(){
+        document.addEventListener('click',(e)=>{
+            if(e.target.classList.contains('ans-toggle')){
+                const ans=e.target.nextElementSibling;
+                ans.classList.toggle('show');
+                e.target.textContent = ans.classList.contains('show') ? '隱藏答案' : '看答案';
+            }
+        });
+    }
+    setupEditMode(){
+        window.addEventListener('keydown',(e)=>{
+            if(e.key==='e'||e.key==='E'){
+                if(document.activeElement && document.activeElement.isContentEditable) return;
+                this.editMode=!this.editMode;
+                document.querySelectorAll('.editable').forEach(el=>{el.contentEditable=this.editMode;});
+                this.toast(this.editMode ? '編輯模式：開啟（點文字即可修改，再按 E 關閉）' : '編輯模式：關閉');
+            }
+        });
+    }
+    toast(msg){
+        const t=document.getElementById('toast');
+        t.textContent=msg;
+        t.classList.add('show');
+        clearTimeout(this._toastTimer);
+        this._toastTimer=setTimeout(()=>t.classList.remove('show'), 2200);
+    }
+}
+const deck = new SlidePresentation();
+
+/* Nav controls outside stage */
+const controls=document.createElement('div');
+controls.className='deck-controls';
+controls.innerHTML = `
+    <button class="nav-btn" id="prevBtn">◀ 上一頁</button>
+    <span class="nav-counter" id="counter">1 / ${deck.total}</span>
+    <button class="nav-btn" id="nextBtn">下一頁 ▶</button>
+`;
+document.body.appendChild(controls);
+document.getElementById('prevBtn').addEventListener('click',()=>deck.prev());
+document.getElementById('nextBtn').addEventListener('click',()=>deck.next());
+const origShow = deck.showSlide.bind(deck);
+deck.showSlide = function(i){
+    origShow(i);
+    document.getElementById('counter').textContent = `${deck.current+1} / ${deck.total}`;
+};
+deck.showSlide(0);
+</script>
+</body>
+</html>
